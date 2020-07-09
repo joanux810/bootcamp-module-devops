@@ -16,13 +16,25 @@ Resources:
     Properties:
       GroupName: MythicalMysfitsLB
       GroupDescription: Load Balancer
-      # Ingress rules
+      #Security Groups in EC2, ingress and egress are equals, they are stateful, in LB we need the egress for the healtcheck, implicit
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
   InstanceSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: MythicalMysfitsInstance
       GroupDescription: Instances
-      # Ingress rules
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        #range of ports
+        FromPort: 8000
+        ToPort: 8000
+        #SourceSecurityGroupId: !GetAtt LoadBalancerSG.GroupId
+        SourceSecurityGroupName: !Ref LoadBalancerSG
+      
   LoadBalancer:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
